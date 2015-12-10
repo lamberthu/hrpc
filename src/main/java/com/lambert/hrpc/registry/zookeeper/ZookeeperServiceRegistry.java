@@ -75,6 +75,14 @@ public class ZookeeperServiceRegistry implements ServiceRegistry{
 //                String path = client.createEphemeralSequential(String.format("%s/%s/%s",Constant.ZK_REGISTRY_PATH  , serviceName , address), address, ZooDefs.Ids.OPEN_ACL_UNSAFE);
                 String nodePath = String.format("%s/%s/%s", Constant.ZK_REGISTRY_PATH, serviceName, address);
                 if(!client.exists(nodePath)) {
+                    // 检测父路径是否存在
+                    if(!client.exists(Constant.ZK_REGISTRY_PATH)){
+                        client.createPersistent(Constant.ZK_REGISTRY_PATH);
+                    }
+                    String parentPath = String.format("%s/%s",Constant.ZK_REGISTRY_PATH , serviceName);
+                    if(!client.exists(parentPath)){
+                        client.createPersistent(parentPath);
+                    }
                     client.createEphemeral(nodePath, address, ZooDefs.Ids.OPEN_ACL_UNSAFE);
                     LOGGER.info("create zookeeper node ({} => {})", nodePath, address);
                 }
