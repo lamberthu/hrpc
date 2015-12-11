@@ -54,24 +54,26 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     public void init(){
         if(!isInit.get()){
             synchronized (this) {
-                ZkClient client = new ZkClient(zookeeperAddress, zookeeperTimeout);
+                if(!isInit.get()) {
+                    ZkClient client = new ZkClient(zookeeperAddress, zookeeperTimeout);
 
-                List<String> serviceNodes;
-                // 获取感兴趣的服务地址 , 为空则获取全部服务的地址
-                if (focusServices != null && focusServices.size() > 0) {
-                    serviceNodes = focusServices;
-                } else {
-                    serviceNodes = client.getChildren(registryPath);
+                    List<String> serviceNodes;
+                    // 获取感兴趣的服务地址 , 为空则获取全部服务的地址
+                    if (focusServices != null && focusServices.size() > 0) {
+                        serviceNodes = focusServices;
+                    } else {
+                        serviceNodes = client.getChildren(registryPath);
+                    }
+
+                    for (String serviceNode : serviceNodes) {
+                        String node = String.format("%s/%s", registryPath, serviceNode);
+                        getServiceNodeData(client, node, client.getChildren(node));
+                    }
+                    // 注册监听
+                    registerChildrenChangeListener(client);
+
+                    isInit.set(true);
                 }
-
-                for (String serviceNode : serviceNodes) {
-                    String node = String.format("%s/%s",registryPath, serviceNode);
-                    getServiceNodeData(client, node, client.getChildren(node));
-                }
-                // 注册监听
-                registerChildrenChangeListener(client);
-
-                isInit.set(true);
             }
         }
     }
