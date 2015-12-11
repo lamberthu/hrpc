@@ -1,4 +1,4 @@
-package com.lambert.hrpc.core.example;
+package com.lambert.hrpc.example;
 
 import com.lambert.hrpc.core.RpcProxyFactory;
 import org.junit.Assert;

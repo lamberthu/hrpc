@@ -1,4 +1,4 @@
-package com.lambert.hrpc.core.example;
+package com.lambert.hrpc.example;
 
 public interface HelloService {
 

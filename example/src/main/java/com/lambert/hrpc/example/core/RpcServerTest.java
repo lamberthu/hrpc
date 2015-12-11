@@ -1,8 +1,8 @@
-package com.lambert.hrpc.core.example.core;
+package com.lambert.hrpc.example.core;
 
 import com.lambert.hrpc.core.RpcContext;
 import com.lambert.hrpc.core.RpcServer;
-import com.lambert.hrpc.core.example.HelloServiceImpl;
+import com.lambert.hrpc.example.HelloServiceImpl;
 
 /**
  * Created by pc on 2015/12/11.
