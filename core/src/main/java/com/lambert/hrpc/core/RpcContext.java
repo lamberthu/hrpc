@@ -1,5 +1,7 @@
 package com.lambert.hrpc.core;
 
+import com.lambert.hrpc.core.handler.FastHandler;
+import com.lambert.hrpc.core.handler.Handler;
 import com.lambert.hrpc.core.serialization.Serializer;
 import com.lambert.hrpc.core.serialization.protostuff.ProtostuffSerializer;
 import com.lambert.hrpc.core.registry.ServiceRegistry;
@@ -16,8 +18,10 @@ public class RpcContext {
     private Serializer serializer;
     private ServiceRegistry serviceRegistry;
     private ReceiveServer receiveServer;
+    private Handler handler;
 
     private RpcConf conf ;
+
 
 
     public void initComponent(){
@@ -30,6 +34,8 @@ public class RpcContext {
         this.serializer = new ProtostuffSerializer();
 
         this.serviceRegistry = new ZookeeperServiceRegistry(conf);
+
+        this.handler = new FastHandler();
 
         this.receiveServer = new NettyReceiveServer(this);
     }
@@ -69,5 +75,13 @@ public class RpcContext {
 
     public void setConf(RpcConf conf) {
         this.conf = conf;
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

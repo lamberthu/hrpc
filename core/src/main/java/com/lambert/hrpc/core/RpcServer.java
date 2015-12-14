@@ -15,7 +15,7 @@ public class RpcServer  {
 //    private ReceiveServer receiveServer;
     private RpcContext context ;
 
-    private Map<String, Object> handlerMap = new HashMap<>(); // 存放接口名与服务对象之间的映射关系
+    private Map<String, Object> objectMap = new HashMap<>(); // 存放接口名与服务对象之间的映射关系
 
 
     public RpcServer(RpcContext context) {
@@ -41,7 +41,7 @@ public class RpcServer  {
 //    }
 
     public void start() throws Exception{
-        context.getReceiveServer().setHandlerMap(handlerMap);
+        context.getHandler().setObjectMap(objectMap);
         context.getReceiveServer().start();
         LOGGER.info("Service started ... ");
     }
@@ -52,7 +52,7 @@ public class RpcServer  {
      */
     public void addService(Object serviceBean) {
         String serviceName = serviceBean.getClass().getAnnotation(RpcService.class).value().getName();
-        handlerMap.put(serviceName, serviceBean);
+        objectMap.put(serviceName, serviceBean);
         context.getServiceRegistry().register(serviceName, context.getConf().getServiceAddress());
         LOGGER.info("add service {}" , serviceName );
     }

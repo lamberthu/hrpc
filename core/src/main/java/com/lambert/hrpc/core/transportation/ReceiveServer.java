@@ -14,8 +14,6 @@ public interface ReceiveServer {
 
     void stop();
 
-     void setHandlerMap(Map<String, Object> handlerMap);
-
      void setContext(RpcContext context);
 
 }

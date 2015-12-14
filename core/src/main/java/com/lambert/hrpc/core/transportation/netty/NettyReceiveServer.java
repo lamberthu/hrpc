@@ -1,8 +1,9 @@
 package com.lambert.hrpc.core.transportation.netty;
 
 import com.lambert.hrpc.core.RpcContext;
-import com.lambert.hrpc.core.pojo.Response;
+import com.lambert.hrpc.core.handler.Handler;
 import com.lambert.hrpc.core.pojo.Request;
+import com.lambert.hrpc.core.pojo.Response;
 import com.lambert.hrpc.core.transportation.ReceiveServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -15,9 +16,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Netty 服务用于接收Client的网络连接
  *
@@ -29,18 +27,19 @@ public class NettyReceiveServer implements ReceiveServer {
 
     private String serverAddress;
 
-    private Map<String, Object> handlerMap = new HashMap<>();
-
     private RpcContext context;
+
+    private Handler handler ;
 
     public NettyReceiveServer(){}
 
-    public NettyReceiveServer(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
-    }
+//    public NettyReceiveServer(Map<String, Object> handlerMap) {
+//        this.handlerMap = handlerMap;
+//    }
     public NettyReceiveServer(RpcContext context){
         this.context = context;
         this.serverAddress = context.getConf().getServiceAddress();
+        this.handler = context.getHandler();
     }
 
     @Override
@@ -56,7 +55,7 @@ public class NettyReceiveServer implements ReceiveServer {
                             channel.pipeline()
                                     .addLast(new Decoder(Request.class , context.getSerializer()))
                                     .addLast(new Encoder(Response.class , context.getSerializer()))
-                                    .addLast(new NettyHandler(handlerMap));
+                                    .addLast(new NettyHandler(handler));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
@@ -79,10 +78,6 @@ public class NettyReceiveServer implements ReceiveServer {
     @Override
     public void stop() {
 
-    }
-
-    public void setHandlerMap(Map<String, Object> handlerMap) {
-        this.handlerMap = handlerMap;
     }
 
     public void setContext(RpcContext context) {

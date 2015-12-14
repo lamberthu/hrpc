@@ -20,8 +20,13 @@ public class RpcConf {
 
     private String serviceAddress;    // 服务绑定的地址
 
+
     public RpcConf(){
         // TODO load config file;
+
+
+
+
 
         String localIp = NetUtils.getMachineIp();
         this.serviceAddress = String.format("%s:%s", localIp, servicePort);
