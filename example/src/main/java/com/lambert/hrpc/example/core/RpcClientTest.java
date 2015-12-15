@@ -2,6 +2,7 @@ package com.lambert.hrpc.example.core;
 
 import com.lambert.hrpc.core.RpcContext;
 import com.lambert.hrpc.core.RpcProxyFactory;
+import com.lambert.hrpc.core.proxy.DefaultRpcProxyFactory;
 import com.lambert.hrpc.example.HelloService;
 
 /**
@@ -15,7 +16,7 @@ public class RpcClientTest {
 
         RpcContext context = new RpcContext();
 
-        RpcProxyFactory factory = new RpcProxyFactory(context);
+        RpcProxyFactory factory = new DefaultRpcProxyFactory(context);
         HelloService helloService = factory.create(HelloService.class);
 
         for(int i = 0 ; i < 10 ; i++) {

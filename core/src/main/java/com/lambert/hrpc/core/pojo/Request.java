@@ -3,6 +3,8 @@ package com.lambert.hrpc.core.pojo;
 public class Request {
 
     private String requestId;
+    private String serverHost;
+    private int serverPort;
     private String className;
     private String methodName;
     private Class<?>[] parameterTypes;
@@ -46,5 +48,21 @@ public class Request {
 
     public void setParameters(Object[] parameters) {
         this.parameters = parameters;
+    }
+
+    public String getServerHost() {
+        return serverHost;
+    }
+
+    public void setServerHost(String serverHost) {
+        this.serverHost = serverHost;
+    }
+
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
     }
 }

@@ -1,9 +1,9 @@
 package com.lambert.hrpc.core.transportation.netty;
 
-import com.lambert.hrpc.core.RpcContext;
-import com.lambert.hrpc.core.pojo.Response;
-import com.lambert.hrpc.core.transportation.Sender;
 import com.lambert.hrpc.core.pojo.Request;
+import com.lambert.hrpc.core.pojo.Response;
+import com.lambert.hrpc.core.serialization.Serializer;
+import com.lambert.hrpc.core.transportation.Sender;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,19 +16,14 @@ public class NettySender extends SimpleChannelInboundHandler<Response> implement
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NettySender.class);
 
-    private String host;
-    private int port;
-
     private Response response;
-
-    private RpcContext context ;
+    private Serializer serializer;
+//    private RpcContext context ;
 
     private final Object obj = new Object();
 
-    public NettySender(String host, int port , RpcContext context) {
-        this.host = host;
-        this.port = port;
-        this.context = context;
+    public NettySender( Serializer serializer) {
+        this.serializer =  serializer;
     }
 
     @Override
@@ -48,6 +43,7 @@ public class NettySender extends SimpleChannelInboundHandler<Response> implement
 
     @Override
     public Response send(Request request) throws Exception {
+        response = null;
         EventLoopGroup group = new NioEventLoopGroup();
 
         try {
@@ -57,14 +53,14 @@ public class NettySender extends SimpleChannelInboundHandler<Response> implement
                     @Override
                     public void initChannel(SocketChannel channel) throws Exception {
                         channel.pipeline()
-                            .addLast(new Encoder(Request.class , context.getSerializer())) // 将 RPC 请求进行编码（为了发送请求）
-                            .addLast(new Decoder(Response.class , context.getSerializer())) // 将 RPC 响应进行解码（为了处理响应）
+                            .addLast(new Encoder(Request.class, serializer))
+                            .addLast(new Decoder(Response.class, serializer))
                             .addLast(NettySender.this);
                     }
                 })
                 .option(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture future = bootstrap.connect(host, port).sync();
+            ChannelFuture future = bootstrap.connect(request.getServerHost(), request.getServerPort()).sync();
             future.channel().writeAndFlush(request).sync();
 
             synchronized (obj) {

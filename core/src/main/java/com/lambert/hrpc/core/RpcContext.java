@@ -7,7 +7,11 @@ import com.lambert.hrpc.core.serialization.protostuff.ProtostuffSerializer;
 import com.lambert.hrpc.core.registry.ServiceRegistry;
 import com.lambert.hrpc.core.registry.zookeeper.ZookeeperServiceRegistry;
 import com.lambert.hrpc.core.transportation.ReceiveServer;
+import com.lambert.hrpc.core.transportation.Sender;
 import com.lambert.hrpc.core.transportation.netty.NettyReceiveServer;
+import com.lambert.hrpc.core.transportation.netty.NettySender;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * RPC 运行上下文
@@ -15,29 +19,56 @@ import com.lambert.hrpc.core.transportation.netty.NettyReceiveServer;
  */
 public class RpcContext {
 
+    private AtomicBoolean isInit = new AtomicBoolean(false);
+
+    /**
+     * common
+     */
+
     private Serializer serializer;
     private ServiceRegistry serviceRegistry;
+
+    /**
+     * server
+     */
     private ReceiveServer receiveServer;
     private Handler handler;
 
-    private RpcConf conf ;
+    /**
+     * client
+     */
+
+    private Sender sender;
 
 
-
+    /**
+     * 初始化组件
+     */
     public void initComponent(){
         // init default component
 
-        if(conf == null) {
-            conf = new RpcConf();
+        if(!isInit.get()) {
+            synchronized (this) {
+                if(!isInit.get()) {
+
+                    if(this.serializer == null ) {
+                        this.serializer = new ProtostuffSerializer();
+                    }
+                    if(this.serviceRegistry == null) {
+                        this.serviceRegistry = new ZookeeperServiceRegistry();
+                    }
+                    if(this.handler == null) {
+                        this.handler = new FastHandler();
+                    }
+                    if(this.receiveServer == null) {
+                        this.receiveServer = new NettyReceiveServer(this);
+                    }
+                    if (this.sender == null ){
+                        this.sender = new NettySender(this.getSerializer());
+                    }
+                }
+            }
         }
-
-        this.serializer = new ProtostuffSerializer();
-
-        this.serviceRegistry = new ZookeeperServiceRegistry(conf);
-
-        this.handler = new FastHandler();
-
-        this.receiveServer = new NettyReceiveServer(this);
     }
 
     public RpcContext(){
@@ -69,13 +100,6 @@ public class RpcContext {
         this.receiveServer.setContext(this);
     }
 
-    public RpcConf getConf() {
-        return conf;
-    }
-
-    public void setConf(RpcConf conf) {
-        this.conf = conf;
-    }
 
     public Handler getHandler() {
         return handler;
@@ -83,5 +107,13 @@ public class RpcContext {
 
     public void setHandler(Handler handler) {
         this.handler = handler;
+    }
+
+    public Sender getSender() {
+        return sender;
+    }
+
+    public void setSender(Sender sender) {
+        this.sender = sender;
     }
 }

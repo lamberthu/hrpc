@@ -36,7 +36,8 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
      */
     private List<String> focusServices ;
 
-    public ZookeeperServiceRegistry(RpcConf conf) {
+    public ZookeeperServiceRegistry() {
+        RpcConf conf = RpcConf.getINSTANCE();
         this.zookeeperAddress = conf.getZookeeperAddress();
         this.zookeeperTimeout = conf.getZookeeperTimeout();
         this.registryPath = conf.getZookeeperRegistryPath();

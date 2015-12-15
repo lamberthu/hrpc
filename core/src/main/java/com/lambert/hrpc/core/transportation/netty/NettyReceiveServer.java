@@ -1,9 +1,11 @@
 package com.lambert.hrpc.core.transportation.netty;
 
+import com.lambert.hrpc.core.RpcConf;
 import com.lambert.hrpc.core.RpcContext;
 import com.lambert.hrpc.core.handler.Handler;
 import com.lambert.hrpc.core.pojo.Request;
 import com.lambert.hrpc.core.pojo.Response;
+import com.lambert.hrpc.core.serialization.Serializer;
 import com.lambert.hrpc.core.transportation.ReceiveServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -31,15 +33,15 @@ public class NettyReceiveServer implements ReceiveServer {
 
     private Handler handler ;
 
+    private Serializer serializer;
+
     public NettyReceiveServer(){}
 
-//    public NettyReceiveServer(Map<String, Object> handlerMap) {
-//        this.handlerMap = handlerMap;
-//    }
     public NettyReceiveServer(RpcContext context){
         this.context = context;
-        this.serverAddress = context.getConf().getServiceAddress();
+        this.serverAddress = RpcConf.getINSTANCE().getServiceAddress();
         this.handler = context.getHandler();
+        this.serializer = context.getSerializer();
     }
 
     @Override
@@ -53,8 +55,8 @@ public class NettyReceiveServer implements ReceiveServer {
                         @Override
                         public void initChannel(SocketChannel channel) throws Exception {
                             channel.pipeline()
-                                    .addLast(new Decoder(Request.class , context.getSerializer()))
-                                    .addLast(new Encoder(Response.class , context.getSerializer()))
+                                    .addLast(new Decoder(Request.class , serializer))
+                                    .addLast(new Encoder(Response.class , serializer))
                                     .addLast(new NettyHandler(handler));
                         }
                     })
