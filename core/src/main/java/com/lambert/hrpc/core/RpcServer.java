@@ -60,7 +60,7 @@ public class RpcServer  {
     public void addService(Object serviceBean) {
         String serviceName = serviceBean.getClass().getAnnotation(RpcService.class).value().getName();
         objectMap.put(serviceName, serviceBean);
-        this.serviceRegistry.register(serviceName, context.getConf().getServiceAddress());
+        this.serviceRegistry.register(serviceName, RpcConf.getINSTANCE().getServiceAddress());
         LOGGER.info("add service {}" , serviceName );
     }
 }

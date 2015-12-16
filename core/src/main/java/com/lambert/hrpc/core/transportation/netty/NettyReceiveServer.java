@@ -35,11 +35,14 @@ public class NettyReceiveServer implements ReceiveServer {
 
     private Serializer serializer;
 
-    public NettyReceiveServer(){}
+    public NettyReceiveServer(){
+        this.serverAddress = RpcConf.getINSTANCE().getServiceAddress();
+    }
 
     public NettyReceiveServer(RpcContext context){
+        this();
         this.context = context;
-        this.serverAddress = RpcConf.getINSTANCE().getServiceAddress();
+
         this.handler = context.getHandler();
         this.serializer = context.getSerializer();
     }

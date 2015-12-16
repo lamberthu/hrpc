@@ -46,7 +46,6 @@ public class RpcContext {
      */
     public void initComponent(){
         // init default component
-
         if(!isInit.get()) {
             synchronized (this) {
                 if(!isInit.get()) {

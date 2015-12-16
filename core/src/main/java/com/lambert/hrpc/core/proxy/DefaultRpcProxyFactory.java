@@ -19,14 +19,12 @@ import java.util.UUID;
 public class DefaultRpcProxyFactory implements RpcProxyFactory {
     private String serverAddress;
     private ServiceRegistry serviceRegistry;
-    private Serializer serializer;
     private Sender sender;
     private RpcContext context;
 
     public DefaultRpcProxyFactory(RpcContext context){
         this.context = context;
         this.serviceRegistry = context.getServiceRegistry();
-        this.serializer = context.getSerializer();
         this.sender = context.getSender();
     }
 
@@ -54,6 +52,7 @@ public class DefaultRpcProxyFactory implements RpcProxyFactory {
                         int port = Integer.parseInt(array[1]);
                         request.setServerHost(host);
                         request.setServerPort(port);
+
                         Response response = sender.send(request);
                         if (response.isError()) {
                             throw response.getError();

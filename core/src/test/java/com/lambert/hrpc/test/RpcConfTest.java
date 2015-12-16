@@ -12,7 +12,7 @@ public class RpcConfTest {
     @Test
     public void test(){
 
-        RpcConf conf = new RpcConf();
+        RpcConf conf = RpcConf.getINSTANCE();
         System.out.println(conf.getZookeeperRegistryPath());
         Assert.assertEquals(conf.getZookeeperRegistryPath() , "/registry");
 
