@@ -1,1 +1,1 @@
-A simple rpc
+A simple rpc writed by java
